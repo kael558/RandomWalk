@@ -5,43 +5,36 @@ from random import uniform
 from math import pi, cos, sin
 
 figure = plt.figure()
-axes = plt.axes()
-# draw_circle = plt.Circle((0.5, 0.5), 0.3)
-# axes.set_aspect(1)
-# axes.add_artist(draw_circle)
+
+
+
 
 num_particles = 100
 num_steps = 100
 
-circle_point = (5, 5)
-circle_radius = 1
-
-xdata, ydata = [0] * num_particles, [0] * num_particles
-
-# p2 = fig.add_subplot(222)
-
+p1 = figure.add_subplot(211)
+xdata1, ydata1 = [0] * num_particles, [0] * num_particles
 ln1, = plt.plot([], [], 'bo')
 
-# ln2, = p2.plot([], [], 'go')
+p2 = figure.add_subplot(212)
+xdata2, ydata2 = np.linspace(0, num_steps, num_steps+1), []
+ln2, = p2.plot([], [], 'go')
 
 
 def init_p1():
-    axes.set_xlabel('X')
-    axes.set_ylabel('Y')
-    axes.set_xlim(-10, 10)
-    axes.set_ylim(-10, 10)
+    p1.set_xlabel('X')
+    p1.set_ylabel('Y')
+    p1.set_xlim(-10, 10)
+    p1.set_ylim(-10, 10)
     return ln1,
 
 
-'''
-def initP2():
-    ax = p2.axes()
-    ax.set_xlabel('Steps')
-    ax.set_ylabel('Particles in Area')
-    ax.set_xlim(0, num_steps)
-    ax.set_ylim(0, num_particles)
+def init_p2():
+    p2.set_xlabel('Steps')
+    p2.set_ylabel('Particles in Area')
+    p2.set_xlim(0, num_steps)
+    p2.set_ylim(0, num_particles)
     return ln2,
-'''
 
 
 def update_p1(frame):
@@ -49,25 +42,29 @@ def update_p1(frame):
         phi = uniform(-pi, pi)
         dx = cos(phi)
         dy = sin(phi)
-        xdata[particle] += dx
-        ydata[particle] += dy
-    plt.Circle((circle_point[0], circle_point[1]), circle_radius)
-    ln1.set_data(xdata, ydata)
+        xdata1[particle] += dx
+        ydata1[particle] += dy
+    #plt.Circle((circle_point[0], circle_point[1]), circle_radius)
+    ln1.set_data(xdata1, ydata1)
     return ln1,
 
 
-'''
-def updateP2(frame):
-    N = 0
-    for particle in range(num_particles):
-        xdata[particle] += dx
-        ydata[particle] += dy
+def update_p2(frame):
+    n = 5
 
-    ln.set_data(xdata, ydata)
+   # for particle in range(num_particles):
+       # xdata1[particle] += dx
+       # ydata1[particle] += dy
+
+    ydata2.append(n)
+    ln2.set_data(xdata2, ydata2)
     return ln2,
-'''
 
-ani = FuncAnimation(figure, update_p1, frames=np.linspace(0, num_steps, num_steps),
+
+ani1 = FuncAnimation(figure, update_p1, frames=np.linspace(0, num_steps, num_steps+1),
                     init_func=init_p1, interval=2000, blit=True, repeat=False)
+
+ani2 = FuncAnimation(figure, update_p2, frames=np.linspace(0, num_steps, num_steps+1),
+                    init_func=init_p2, interval=2000, blit=True, repeat=False)
 
 plt.show()
