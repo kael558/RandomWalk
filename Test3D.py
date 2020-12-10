@@ -6,22 +6,14 @@ from math import sqrt, pi
 from random import uniform
 import random
 
-'''
-easy
-https://www.mit.edu/~kardar/teaching/projects/chemotaxis(AndreaSchmidt)/random.htm
-http://sites.science.oregonstate.edu/~landaur/INSTANCES/WebModules/5_RandomWalk/RandomWalkFiles/Pdfs/StudentReadings.pdf
 
-hard
-https://en.wikipedia.org/wiki/Particular_values_of_the_gamma_function
-https://mathworld.wolfram.com/RandomWalk1-Dimensional.html
-'''
-
-# Simulation Parameters
+# Animation Parameters
 repeat = False #For animation
 interval = 500
 box_size = 50000
-np.random.seed(235253)  # Fixing random state for reproducibility
 
+# Simulation Parameters
+np.random.seed(235253)  # Fixing random state for reproducibility
 num_particles = 30
 num_steps = 50
 d = 1  # Angstrom
@@ -36,6 +28,7 @@ mean_free_path = (R * 10 ** 30) * T / (sqrt(2) * pi * (d ** 2) * Na * P)
 
 def r_calculation(x_data, y_data):
     """
+    used to calculate the r coefficient given x_data and y_data
     :param x_data: the x data
     :param y_data: the y data
     :return: the r coefficient of the data
