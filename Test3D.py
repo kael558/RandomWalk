@@ -6,16 +6,15 @@ from math import sqrt, pi
 from random import uniform
 import random
 
-
 # Animation Parameters
-repeat = False #For animation
-interval = 500
-box_size = 50000
+repeat = True  # For animation
+interval = 10
+box_size = 100000
 
 # Simulation Parameters
 np.random.seed(235253)  # Fixing random state for reproducibility
 num_particles = 30
-num_steps = 50
+num_steps = 100
 d = 1  # Angstrom
 P = 101325  # Standard pressure in pascal
 T = 273.15  # Standard temperature in kelvin
@@ -86,23 +85,14 @@ def get_random_line(dims=3):
     return lineData
 
 
-def calculate_average_distances(data):
+def calculate_average_distances_squared(data):
     """
     :param data: the random lines data
-    :return: the average distance of all particles to origin at each step
+    :return: the average distance squared of all particles to origin at each step
     """
-    distances_from_origin = [[sqrt(p[0][step] ** 2 + p[1][step] ** 2 + p[2][step] ** 2) for step in range(num_steps)]
+    distances_from_origin = [[(p[0][step] ** 2 + p[1][step] ** 2 + p[2][step] ** 2) for step in range(num_steps)]
                              for p in data]
     return [sum(p) / num_particles for p in zip(*distances_from_origin)]
-
-
-def calculate_average_distances_squared(average_distances):
-    '''
-    :param average_distances: the average distance of all particles to origin at each step
-    :return: the square of the average distance of all particles to origin at each step
-    '''
-    return [d ** 2 for d in average_distances]
-
 
 def update_p1(step_count, dataLines, plt_lines):
     """
@@ -120,22 +110,12 @@ def update_p1(step_count, dataLines, plt_lines):
 
 def update_p2(step_count):
     """
-    the average distance plot
+    the average distance squared plot
     :param step_count: the current step
     :return: the updated plot line
     """
     ln2.set_data(steps[:step_count + 1], ydata2[:step_count + 1])
     return ln2,
-
-
-def update_p3(step_count):
-    """
-    the average distance squared plot
-    :param step_count: the current step
-    :return: the updated plot line
-    """
-    ln3.set_data(steps[:step_count + 1], ydata3[:step_count + 1])
-    return ln3,
 
 
 def init_2D_plot(plot, ylabel, ylim, title):
@@ -157,11 +137,9 @@ def init_2D_plot(plot, ylabel, ylim, title):
 # Pre calculating all data points
 steps = range(0, num_steps)
 data = [get_random_line() for index in range(num_particles)]
-ydata2 = calculate_average_distances(data)
-ydata3 = calculate_average_distances_squared(ydata2)
+ydata2 = calculate_average_distances_squared(data)
 
-print("R coefficient for average displacement: " + str(r_calculation(steps, ydata2)))
-print("R coefficient for average displacement squared: " + str(r_calculation(steps, ydata3)))
+print("R coefficient for average displacement squared: " + str(r_calculation(steps, ydata2)))
 
 # Creating the figure
 fig = plt.figure()
@@ -178,25 +156,16 @@ p1.set_xlim3d(-box_size, box_size)
 p1.set_ylim3d(-box_size, box_size)
 p1.set_zlim3d(-box_size, box_size)
 
-# Setting up plot 2 for average distance of particles
+# Setting up plot 2 for average distance squared of particles
 p2 = fig.add_subplot(222)
-expectedAverageDistanceLine = plt.Arrow(0, 0, num_steps, sqrt(num_steps) * mean_free_path)
-p2.add_patch(expectedAverageDistanceLine)
-ln2, = p2.plot([], [], color='green', marker='.', linestyle='solid')
-init_2D_plot(p2, 'Average Distance ($\AA$)',  1.1 * sqrt(num_steps) * mean_free_path, 'Average Distance at Each Step')
-
-# Setting up plot 3 for average distance squared of particles
-p3 = fig.add_subplot(223)
 expectedAverageDistanceSquaredLine = plt.Arrow(0, 0, num_steps, num_steps * mean_free_path ** 2)
-p3.add_patch(expectedAverageDistanceSquaredLine)
-ln3, = p3.plot([], [], color='blue', marker='.', linestyle='solid')
-init_2D_plot(p3, 'Average Distance Squared', 1.1 * num_steps * mean_free_path ** 2, 'Average Distance Squared at Each Step')
+p2.add_patch(expectedAverageDistanceSquaredLine)
+ln2, = p2.plot([], [], color='blue', marker='.', linestyle='solid')
+init_2D_plot(p2, 'Average Distance Squared', 1.1 * num_steps * mean_free_path ** 2, 'Average Distance Squared at Each Step')
 
 # Creating the Animation objects
 ani1 = FuncAnimation(fig, update_p1, frames=num_steps, fargs=(data, lines), interval=interval, blit=True, repeat=repeat)
 
 ani2 = FuncAnimation(fig, update_p2, frames=num_steps, interval=interval, blit=True, repeat=repeat)
-
-ani3 = FuncAnimation(fig, update_p3, frames=num_steps, interval=interval, blit=True, repeat=repeat)
 
 plt.show()
